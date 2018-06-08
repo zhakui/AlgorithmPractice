@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="kmp:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/kmp_jar</output-path>
+    <root id="archive" name="kmp.jar">
+      <element id="module-output" name="kmp" />
+    </root>
+  </artifact>
+</component>

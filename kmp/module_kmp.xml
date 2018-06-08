@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_kmp" default="compile.module.kmp">
+  <dirname property="module.kmp.basedir" file="${ant.file.module_kmp}"/>
+  
+  <property name="module.jdk.home.kmp" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.kmp" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.kmp" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.kmp" value="-encoding UTF-8 -source 1.5 -target 1.5 ${compiler.args}"/>
+  
+  <property name="kmp.output.dir" value="${module.kmp.basedir}/target/classes"/>
+  <property name="kmp.testoutput.dir" value="${module.kmp.basedir}/target/test-classes"/>
+  
+  <path id="kmp.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="kmp.module.production.classpath">
+    <path refid="${module.jdk.classpath.kmp}"/>
+  </path>
+  
+  <path id="kmp.runtime.production.module.classpath">
+    <pathelement location="${kmp.output.dir}"/>
+  </path>
+  
+  <path id="kmp.module.classpath">
+    <path refid="${module.jdk.classpath.kmp}"/>
+    <pathelement location="${kmp.output.dir}"/>
+  </path>
+  
+  <path id="kmp.runtime.module.classpath">
+    <pathelement location="${kmp.testoutput.dir}"/>
+    <pathelement location="${kmp.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.kmp">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.kmp">
+    <patternset refid="excluded.from.module.kmp"/>
+  </patternset>
+  
+  <path id="kmp.module.sourcepath">
+    <dirset dir="${module.kmp.basedir}">
+      <include name="src/main/java"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="kmp.module.test.sourcepath">
+    <dirset dir="${module.kmp.basedir}">
+      <include name="src/test/java"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.kmp" depends="compile.module.kmp.production,compile.module.kmp.tests" description="Compile module kmp"/>
+  
+  <target name="compile.module.kmp.production" depends="register.custom.compilers" description="Compile module kmp; production classes">
+    <mkdir dir="${kmp.output.dir}"/>
+    <javac2 destdir="${kmp.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.kmp}/javac">
+      <compilerarg line="${compiler.args.kmp}"/>
+      <bootclasspath refid="kmp.module.bootclasspath"/>
+      <classpath refid="kmp.module.production.classpath"/>
+      <src refid="kmp.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.kmp"/>
+    </javac2>
+    
+    <copy todir="${kmp.output.dir}">
+      <fileset dir="${module.kmp.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.kmp.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.kmp.tests" depends="register.custom.compilers,compile.module.kmp.production" description="compile module kmp; test classes" unless="skip.tests">
+    <mkdir dir="${kmp.testoutput.dir}"/>
+    <javac2 destdir="${kmp.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.kmp}/javac">
+      <compilerarg line="${compiler.args.kmp}"/>
+      <bootclasspath refid="kmp.module.bootclasspath"/>
+      <classpath refid="kmp.module.classpath"/>
+      <src refid="kmp.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.kmp"/>
+    </javac2>
+    
+    <copy todir="${kmp.testoutput.dir}">
+      <fileset dir="${module.kmp.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.kmp" description="cleanup module">
+    <delete dir="${kmp.output.dir}"/>
+    <delete dir="${kmp.testoutput.dir}"/>
+  </target>
+</project>
